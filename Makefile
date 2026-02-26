@@ -9,13 +9,16 @@ LIBBPF_LDLIBS := $(shell pkg-config --libs libbpf 2>/dev/null)
 
 LIBBPF_LDLIBS ?= -lbpf
 
-all: vmlinux.h scx_minimal.bpf.o loader
+all: vmlinux.h scx_minimal.bpf.o tc.bpf.o loader
 
 vmlinux.h:
 	@echo "Generating vmlinux.h from /sys/kernel/btf/vmlinux"
 	bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 
 scx_minimal.bpf.o: scx_minimal.bpf.c vmlinux.h
+	$(CLANG) $(BPF_CFLAGS) -I. -Iinclude -c $< -o $@
+
+tc.bpf.o: tc.bpf.c vmlinux.h
 	$(CLANG) $(BPF_CFLAGS) -I. -Iinclude -c $< -o $@
 
 loader: loader.c

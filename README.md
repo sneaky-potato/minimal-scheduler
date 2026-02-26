@@ -1,6 +1,6 @@
-# Custom eBPF Scheduler
+# eBPF Snippets
 
-> Controlling 'HOW' your prgrams run on the CPU
+> Scripting the very thing which runs your clumsy scripts
 
 ---
 
@@ -20,8 +20,22 @@ sudo make install
 sudo ldconfig
 ```
 
-Then build the loader and scheduler files
+Then build the loader, scheduler and tc
 ```bash
 make all
+```
+
+## Testing
+
+### Traffic controller
+
+```shell
+sudo tc qdisc add dev <ifname> clsact
+sudo tc filter add dev <ifname> ingress bpf da obj tc.bpf.o sec tc
+```
+
+Now check the generated traffic
+```shell
+sudo cat /sys/kernel/debug/tracing/trace_pipe
 ```
 
